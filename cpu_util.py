@@ -6,12 +6,14 @@ import os
 import json
 
 def find_pid_by_name(target_name):
-    """Tìm PID của process dựa trên tên file chạy (ví dụ: heavy_node)"""
-    for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+    """Tìm PID chính xác, bỏ qua tiến trình wrapper như 'uv'"""
+    # Sắp xếp theo PID giảm dần để thường bắt được tiến trình con (sinh sau) trước
+    for proc in sorted(psutil.process_iter(['pid', 'name', 'cmdline']), key=lambda p: p.info['pid'], reverse=True):
         try:
-            # Kiểm tra trong dòng lệnh chạy (cmdline) có chứa tên file không
-            if proc.info['cmdline'] and any(target_name in s for s in proc.info['cmdline']):
-                return proc.info['pid']
+            # Chỉ lấy process có tên chứa "python"
+            if "python" in proc.info['name'].lower():
+                if proc.info['cmdline'] and any(target_name in s for s in proc.info['cmdline']):
+                    return proc.info['pid']
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
     return None
