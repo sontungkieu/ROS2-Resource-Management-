@@ -1,0 +1,11 @@
+[project]
+name = "ros2-rm"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.4.0",
+    "psutil>=7.2.1",
+    "pyyaml>=6.0.3",
+]
